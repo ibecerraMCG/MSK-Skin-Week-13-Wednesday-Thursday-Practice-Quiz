@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 13 Wednesday & Thursday Practice Quiz</title>
+    <style>
+        /* --- Color Variables --- */
+        :root {
+            /* Default: Dark Theme */
+            --bg-color: #2d343e;
+            /* Dark background */
+            --container-bg: #3c424f;
+            /* Slightly lighter container */
+            --text-color: #e8e6e3;
+            /* Light text */
+            --question-text-color: #8ab4f8;
+            /* Light blue for questions */
+            --lo-text-color: #b0c4de;
+            /* Lighter blue for learning objective */
+            --border-color: #555;
+            /* Darker borders */
+            --separator-color: #4a4f5a;
+            --label-bg: #454c5a;
+            --label-border: #6c757d;
+            --label-hover-bg: #525966;
+            --label-hover-border: #7a828a;
+            --button-bg: #8ab4f8;
+            --button-text: #202124;
+            --button-hover-bg: #a3c5f9;
+            --button-disabled-bg: #5f6368;
+            --feedback-correct-bg: #344e41;
+            --feedback-correct-text: #c7f9cc;
+            --feedback-correct-border: #52b788;
+            --feedback-incorrect-bg: #5e2129;
+            --feedback-incorrect-text: #f8d7da;
+            --feedback-incorrect-border: #a4133c;
+            --feedback-rationale-text: #adb5bd;
+            /* Lighter gray for rationale */
+            --feedback-source-text: #c7d3e0;
+            --feedback-separator: #6c757d;
+            --radio-accent: #8ab4f8;
+        }
+
+        .light-theme {
+            --bg-color: #eef2f7;
+            --container-bg: #ffffff;
+            --text-color: #343a40;
+            --question-text-color: #0056b3;
+            --lo-text-color: #5a6e8a;
+            --border-color: #dee2e6;
+            --separator-color: #e9ecef;
+            --label-bg: #f8f9fa;
+            --label-border: #ced4da;
+            --label-hover-bg: #e2e6ea;
+            --label-hover-border: #adb5bd;
+            --button-bg: #007bff;
+            --button-text: white;
+            --button-hover-bg: #0056b3;
+            --button-disabled-bg: #6c757d;
+            --feedback-correct-bg: #d1e7dd;
+            --feedback-correct-text: #0f5132;
+            --feedback-correct-border: #badbcc;
+            --feedback-incorrect-bg: #f8d7da;
+            --feedback-incorrect-text: #842029;
+            --feedback-incorrect-border: #f5c2c7;
+            --feedback-rationale-text: #495057;
+            --feedback-source-text: #343a40;
+            --feedback-separator: #ccc;
+            --radio-accent: #007bff;
+        }
+
+        /* --- General Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.7;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 40px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #theme-toggle-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 12px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--label-border);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            z-index: 1000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #theme-toggle-button:hover {
+            opacity: 0.8;
+        }
+
+        #quiz-container {
+            max-width: 900px;
+            margin: 80px auto 30px auto;
+            background: var(--container-bg);
+            padding: 25px 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .question-block {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--separator-color);
+            transition: border-color 0.3s;
+        }
+
+        .question-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 5px;
+        }
+
+        .learning-objective {
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--lo-text-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--separator-color);
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 18px;
+            color: var(--question-text-color);
+            transition: color 0.3s;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--label-border);
+            background-color: var(--label-bg);
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+
+        .options label:hover {
+            background-color: var(--label-hover-bg);
+            border-color: var(--label-hover-border);
+        }
+
+        .options input[type="radio"]:checked+span {
+            font-weight: bold;
+            color: var(--question-text-color);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--radio-accent);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .check-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .check-button:hover {
+            opacity: 0.85;
+        }
+
+        .check-button:disabled {
+            background-color: var(--button-disabled-bg);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            display: none;
+            border: 1px solid transparent;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .feedback.correct {
+            background-color: var(--feedback-correct-bg);
+            color: var(--feedback-correct-text);
+            border-color: var(--feedback-correct-border);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: var(--feedback-incorrect-bg);
+            color: var(--feedback-incorrect-text);
+            border-color: var(--feedback-incorrect-border);
+            display: block;
+        }
+
+        .feedback-status {
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .feedback-rationale {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--feedback-separator);
+            font-size: 0.9em;
+            color: var(--feedback-rationale-text);
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .feedback-source {
+            margin-top: 10px;
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--feedback-source-text);
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--question-text-color);
+            margin-top: 30px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle-button">Toggle Theme</button>
+    <h1>Week 13 Wednesday & Thursday Practice Quiz</h1>
+    <div id="quiz-container">
+        <!-- Questions will be loaded here by JavaScript -->
+    </div>
+    <script>
+        const quizData = [
+             // Hypersensitivity Reactions from Drugs & Infections Questions
+            {
+                learningObjective: "LO 1 (Hypersensitivity Reactions from Drugs & Infections): Identify and discuss important drug reactions based on the history, clinical examination, and histopathology.",
+                question: "A 25-year-old woman develops intensely pruritic, raised, pink wheals on her trunk and arms 30 minutes after taking a dose of penicillin for a throat infection. She notes that an individual spot seems to appear and then disappear within a few hours, only to be replaced by new spots elsewhere. This evanescent nature is a hallmark of the condition. Which of the following is the most likely diagnosis?",
+                options: {
+                    A: "Erythema multiforme",
+                    B: "Morbilliform drug reaction",
+                    C: "Urticaria",
+                    D: "Fixed drug eruption"
+                },
+                correctAnswer: "C",
+                rationale: "Urticaria (hives) is characterized by pruritic, edematous wheals that are evanescent, meaning each individual lesion lasts less than 24 hours. It is a common IgE-dependent reaction to drugs like penicillin.",
+                source: "'Urticaria (Hives)... Pruritic pink or pale flesh-colored wheals. Evanescent (each lesion <24 hrs)' (Hypersensitivity Reactions from Drugs & Infections, Page 2)"
+            },
+            {
+                learningObjective: "LO 1 (Hypersensitivity Reactions from Drugs & Infections): Identify and discuss important drug reactions based on the history, clinical examination, and histopathology.",
+                question: "A 30-year-old man was started on allopurinol for gout one week ago. He now presents with a widespread, symmetric, \"measles-like\" rash consisting of blanchable macules and papules that have become confluent on his trunk. He is afebrile and feels generally well. The rash is expected to last one to two weeks and may even fade while he continues the medication. What is the most likely diagnosis?",
+                options: {
+                    A: "DRESS syndrome",
+                    B: "Stevens-Johnson syndrome",
+                    C: "Urticaria",
+                    D: "Morbilliform drug reaction"
+                },
+                correctAnswer: "D",
+                rationale: "Morbilliform (or maculopapular) drug reactions are the most common type of cutaneous drug eruption. They are characterized by a \"measles-like\" appearance, typically occur within a week of starting a new drug, and are not associated with systemic symptoms. The patient is \"not sick.\"",
+                source: "'Morbilliform Drug Reactions. Blanchable macules, papules; fixed. Differential: viral exanthema \"measles-like\"... Lasts one to two weeks.' (Hypersensitivity Reactions from Drugs & Infections, Page 7)"
+            },
+            {
+                learningObjective: "LO 1 (Hypersensitivity Reactions from Drugs & Infections): Identify and discuss important drug reactions based on the history, clinical examination, and histopathology.",
+                question: "A 28-year-old woman complains of a recurrent skin lesion on her left thigh. She reports that every time she takes an over-the-counter NSAID for menstrual cramps, a single, round, dusky erythematous plaque develops in the exact same location. The lesion resolves over several days, leaving a dark brown patch. What is the most likely diagnosis?",
+                options: {
+                    A: "Erythema multiforme",
+                    B: "Fixed drug eruption",
+                    C: "Cellulitis",
+                    D: "Urticaria"
+                },
+                correctAnswer: "B",
+                rationale: "A fixed drug eruption is characterized by the formation of one or more sharply demarcated, erythematous plaques that recur in the identical location upon re-exposure to the offending drug. They typically heal with significant post-inflammatory hyperpigmentation.",
+                source: "'Fixed Drug Eruption... Round, sharply demarcated... Heals very dark... Subsequent exposures: old sites & more' (Hypersensitivity Reactions from Drugs & Infections, Page 38)"
+            },
+            {
+                learningObjective: "LO 2 (Hypersensitivity Reactions from Drugs & Infections): Recognize drug reactions with associated systemic involvement.",
+                question: "A 26-year-old man was started on phenytoin for a seizure disorder four weeks ago. He is brought to the emergency department with a high fever, malaise, and a spreading morbilliform rash. Examination reveals facial edema, diffuse lymphadenopathy, and tender hepatomegaly. Laboratory studies show eosinophilia and elevated liver transaminases. This constellation of findings is characteristic of which severe drug reaction?",
+                options: {
+                    A: "Morbilliform drug reaction",
+                    B: "Stevens-Johnson syndrome (SJS)",
+                    C: "Drug Reaction with Eosinophilia and Systemic Symptoms (DRESS)",
+                    D: "Erythema multiforme major"
+                },
+                correctAnswer: "C",
+                rationale: "DRESS is a severe, T-cell mediated hypersensitivity reaction characterized by a late onset (2-6 weeks) after starting a drug, a morbilliform eruption with facial edema, fever, lymphadenopathy, and systemic involvement (e.g., hepatitis, nephritis). Eosinophilia is a key laboratory finding.",
+                source: "'DRESS: Drug Reaction with Eosinophilia & Systemic Symptoms... Late morbilliform eruption (2-6 weeks)... Dermal edema, facial edema... Fever, lymphadenopathy, hepatitis. Eosinophilia, atypical lymphocytes.' (Hypersensitivity Reactions from Drugs & Infections, Page 13)"
+            },
+            {
+                learningObjective: "LO 2 (Hypersensitivity Reactions from Drugs & Infections): Recognize drug reactions with associated systemic involvement.",
+                question: "A 35-year-old woman is hospitalized with a fever, painful blistering rash, and severe mucosal erosions. She was started on trimethoprim-sulfamethoxazole ten days ago for a urinary tract infection. Examination reveals widespread purpuric macules with flaccid blisters, some of which have sloughed off. She has hemorrhagic crusting of the lips and severe conjunctivitis. The total body surface area involved with epidermal detachment is estimated to be 15%. What is the most likely diagnosis?",
+                options: {
+                    A: "Toxic Epidermal Necrolysis (TEN)",
+                    B: "Erythema multiforme major",
+                    C: "SJS/TEN overlap",
+                    D: "DRESS syndrome"
+                },
+                correctAnswer: "C",
+                rationale: "Stevens-Johnson Syndrome (SJS) and Toxic Epidermal Necrolysis (TEN) are a spectrum of severe mucocutaneous reactions, most often triggered by drugs. They are characterized by fever, mucosal involvement, and epidermal necrosis. The diagnosis is classified by the percentage of body surface area detachment: <10% for SJS, >30% for TEN, and 10-30% for SJS/TEN overlap.",
+                source: "'Toxic Epidermal Necrolysis (TEN)... > 30% epidermal loss. <10% SJS. 10-30% SJS/TEN Overlap.' (Hypersensitivity Reactions from Drugs & Infections, Page 25)"
+            },
+            {
+                learningObjective: "LO 2 (Hypersensitivity Reactions from Drugs & Infections): Recognize drug reactions with associated systemic involvement.",
+                question: "A patient is admitted to the burn unit for management of Toxic Epidermal Necrolysis (TEN) with 40% body surface area involvement. The condition is characterized by acute, full-thickness epidermal necrosis and a positive Nikolsky sign. Which of the following is the most appropriate initial management step?",
+                options: {
+                    A: "Aggressive surgical debridement of necrotic skin",
+                    B: "Immediate administration of high-dose systemic corticosteroids",
+                    C: "Supportive care, including fluid/electrolyte management and wound care",
+                    D: "Administration of a different broad-spectrum antibiotic"
+                },
+                correctAnswer: "C",
+                rationale: "The cornerstone of SJS/TEN management is immediate withdrawal of the offending drug and supportive care, similar to that for a severe burn patient. This includes meticulous wound care, fluid and electrolyte management, and nutritional support. Aggressive debridement is not recommended, and the use of systemic steroids is controversial with no controlled studies to support it.",
+                source: "'SJS/TEN. Hospitalize and treat as burn patient. Do not aggressively debride!! Supportive care; ophthalmology consult.' (Hypersensitivity Reactions from Drugs & Infections, Page 34)"
+            },
+            {
+                learningObjective: "LO 3 (Hypersensitivity Reactions from Drugs & Infections): Recognize cutaneous hypersensitivity reactions that can be triggered by infections.",
+                question: "A 21-year-old college student presents with an acute eruption of target-like lesions on his hands and feet. The lesions have three distinct zones: a dusky center, a pale edematous ring, and an erythematous halo. He also has a painful cold sore on his lip that appeared a week ago. This cutaneous reaction is most commonly triggered by which infectious agent?",
+                options: {
+                    A: "Streptococcus pyogenes",
+                    B: "Mycoplasma pneumoniae",
+                    C: "Herpes simplex virus (HSV)",
+                    D: "Human immunodeficiency virus (HIV)"
+                },
+                correctAnswer: "C",
+                rationale: "Erythema multiforme (EM) is an acute hypersensitivity reaction characterized by classic \"three zone\" target lesions, typically on the acral extremities. The most common trigger for recurrent EM is a preceding herpes simplex virus infection.",
+                source: "'Erythema Multiforme (EM). “Three zone” targets... Usually infectious trigger -herpes simplex' (Hypersensitivity Reactions from Drugs & Infections, Page 17)"
+            },
+            {
+                learningObjective: "LO 3 (Hypersensitivity Reactions from Drugs & Infections): Recognize cutaneous hypersensitivity reactions that can be triggered by infections.",
+                question: "A 10-year-old child develops hives (urticaria) that have been present for three days. The mother reports the child had a sore throat last week. In addition to drugs and food, which of the following is a common infectious trigger for acute urticaria?",
+                options: {
+                    A: "Herpes simplex virus",
+                    B: "Staphylococcus aureus",
+                    C: "Streptococcus infection",
+                    D: "Varicella-zoster virus"
+                },
+                correctAnswer: "C",
+                rationale: "Acute urticaria, defined as lasting less than 6 weeks, can be triggered by various factors. While drugs and foods are common culprits, infections are also a frequent cause, with streptococcal infections being a well-recognized trigger.",
+                source: "'Urticaria: Multiple Variants. Acute < 6 weeks... - infections: strep' (Hypersensitivity Reactions from Drugs & Infections, Page 5)"
+            },
+            {
+                learningObjective: "LO 3 (Hypersensitivity Reactions from Drugs & Infections): Recognize cutaneous hypersensitivity reactions that can be triggered by infections.",
+                question: "A 17-year-old female being treated with amoxicillin for a sore throat develops a diffuse maculopapular rash. A subsequent blood test confirms a diagnosis of infectious mononucleosis. The development of a morbilliform rash after administration of certain antibiotics is significantly more common in patients with which viral infection?",
+                options: {
+                    A: "Human Immunodeficiency Virus (HIV)",
+                    B: "Cytomegalovirus (CMV)",
+                    C: "Epstein-Barr Virus (EBV)",
+                    D: "Herpes Simplex Virus (HSV)"
+                },
+                correctAnswer: "C",
+                rationale: "Patients with infectious mononucleosis (caused by EBV) have a very high rate (over 90%) of developing a morbilliform drug reaction if they are treated with aminopenicillins like amoxicillin or ampicillin. This is a classic association.",
+                source: "'Increased rates with viral infections - mononucleosis; HIV' (Hypersensitivity Reactions from Drugs & Infections, Page 10)"
+            },
+            // Musculoskeletal Imaging Basics Questions
+            {
+                learningObjective: "LO 1 (Musculoskeletal Imaging Basics): Describe the imaging modalities and techniques commonly used in the evaluation of the musculoskeletal system.",
+                question: "A physician is explaining an imaging procedure to a patient. The physician describes that the test uses electromagnetic radiation that is absorbed differently by various tissues, causing bone to appear white and soft tissues to appear in shades of grey. Which imaging modality is being described?",
+                options: {
+                    A: "Magnetic Resonance Imaging (MRI)",
+                    B: "Computed Tomography (CT)",
+                    C: "Ultrasonography",
+                    D: "X-ray (Radiograph)"
+                },
+                correctAnswer: "D",
+                rationale: "X-rays use electromagnetic radiation (x-rays) that pass through the body. Tissues absorb this radiation to varying degrees based on their density. Bone is dense and absorbs radiation well, appearing white (radio-opaque), while soft tissues are less dense and appear grey.",
+                source: "'Xray. Electromagnetic radiation that is absorbed at varying levels... Bones absorb radiation well and therefore appear bright white on xray. Soft tissue does not absorb radiation well and therefore appears as shades of grey.' (The Basics of Musculoskeletal Imaging, Page 5)"
+            },
+            {
+                learningObjective: "LO 1 (Musculoskeletal Imaging Basics): Describe the imaging modalities and techniques commonly used in the evaluation of the musculoskeletal system.",
+                question: "A patient with a metallic heart valve requires advanced imaging to evaluate a complex fracture. The physician wants to avoid using a modality that utilizes high-powered magnets due to the implanted device. Which of the following imaging techniques relies on the alignment of protons in a strong magnetic field?",
+                options: {
+                    A: "X-ray",
+                    B: "CT Scan",
+                    C: "MRI",
+                    D: "Bone Scan"
+                },
+                correctAnswer: "C",
+                rationale: "Magnetic Resonance Imaging (MRI) uses powerful magnets to align protons in the body's tissues. The presence of certain metallic implants or foreign bodies is a major contraindication for MRI due to the risk of device malfunction or movement.",
+                source: "'MRI. MR uses high powered magnets... protons aligning with a magnetic field...' (The Basics of Musculoskeletal Imaging, Page 16) and 'When NOT to use MRI: If the patient has implanted devices or metallic foreign bodies' (The Basics of Musculoskeletal Imaging, Page 19)"
+            },
+            {
+                learningObjective: "LO 1 (Musculoskeletal Imaging Basics): Describe the imaging modalities and techniques commonly used in the evaluation of the musculoskeletal system.",
+                question: "An MRI of a patient's knee is performed to evaluate for a meniscal tear. The radiologist reviews a sequence where both fat and water (fluid) appear bright white. This high signal from water is particularly useful for detecting edema and other fluid collections associated with injury. Which MRI weighting is being described?",
+                options: {
+                    A: "T1-weighted",
+                    B: "T2-weighted",
+                    C: "Proton density-weighted",
+                    D: "Gradient echo"
+                },
+                correctAnswer: "B",
+                rationale: "T2-weighted MRI enhances the signal of water, causing fluid-filled structures, edema, and fat to appear bright white. This is in contrast to T1-weighted imaging, which suppresses the signal of water, making it appear dark.",
+                source: "'T2 weighted MRI enhances the signal of water (fat and water are white)' (The Basics of Musculoskeletal Imaging, Page 17)"
+            },
+            {
+                learningObjective: "LO 2 (Musculoskeletal Imaging Basics): Describe common indications for the use of each imaging modality.",
+                question: "A 23-year-old basketball player \"rolled\" his ankle during a game. He has significant swelling and pain, and the physician is concerned about a fracture. What is the most appropriate initial imaging modality to evaluate for a fracture?",
+                options: {
+                    A: "MRI",
+                    B: "CT Scan",
+                    C: "X-ray",
+                    D: "Ultrasound"
+                },
+                correctAnswer: "C",
+                rationale: "X-ray is the primary and first-line imaging modality for the evaluation of suspected fractures due to its excellent ability to visualize bone, wide availability, and relatively low cost.",
+                source: "'When to use [X-ray]: Fractures' (The Basics of Musculoskeletal Imaging, Page 6)"
+            },
+            {
+                learningObjective: "LO 2 (Musculoskeletal Imaging Basics): Describe common indications for the use of each imaging modality.",
+                question: "A 45-year-old patient presents with chronic knee pain and mechanical symptoms like locking and catching. The physician suspects a meniscal tear. Although an initial X-ray shows no fracture, it cannot visualize the soft tissue structures within the knee. What is the best imaging modality to evaluate for an internal derangement of a soft tissue structure like a meniscus?",
+                options: {
+                    A: "CT Scan",
+                    B: "MRI",
+                    C: "Bone Scan",
+                    D: "Fluoroscopy"
+                },
+                correctAnswer: "B",
+                rationale: "MRIs are the gold standard for evaluating soft tissue structures such as ligaments, tendons, cartilage, and menisci, which are not visible on standard radiographs. A suspected internal derangement of a joint is a primary indication for an MRI.",
+                source: "'When to order an MRI: MRIs are excellent at evaluating the soft tissue structures that cannot be viewed on standard radiographs... If you think there is an internal derangement of a soft tissue structure... an MRI is warranted.' (The Basics of Musculoskeletal Imaging, Page 18)"
+            },
+            {
+                learningObjective: "LO 2 (Musculoskeletal Imaging Basics): Describe common indications for the use of each imaging modality.",
+                question: "An 18-year-old soccer player falls on her outstretched hand. She has tenderness to palpation in her anatomic snuffbox. Initial X-rays of the wrist are negative, but there is high clinical suspicion for an occult scaphoid fracture. Which advanced imaging modality is most sensitive for detecting an occult fracture that is not visible on plain films?",
+                options: {
+                    A: "Ultrasound",
+                    B: "Fluoroscopy",
+                    C: "CT Scan",
+                    D: "MRI"
+                },
+                correctAnswer: "D",
+                rationale: "While CT provides excellent bony detail, MRI is highly sensitive for detecting occult fractures (fractures not visible on X-ray) because it can visualize the bone marrow edema associated with the acute injury, even before a fracture line is apparent.",
+                source: "'When to order an MRI: ... If you suspect disorder of the bone that cannot be visualized by Xray (occult scaphoid fractures...)' (The Basics of Musculoskeletal Imaging, Page 18)"
+            },
+            {
+                learningObjective: "LO 3 (Musculoskeletal Imaging Basics): Establish familiarity with imaging appearance of basic anatomical structures.",
+                question: "A resident is reviewing a normal AP radiograph of the shoulder. They identify the clavicle and the acromion. They measure the space between these two bones to ensure it is within normal limits. What is the normal width of the acromioclavicular (AC) joint space?",
+                options: {
+                    A: "< 8mm",
+                    B: "> 13mm",
+                    C: "< 2mm",
+                    D: "> 20mm"
+                },
+                correctAnswer: "A",
+                rationale: "On a standard AP shoulder X-ray, the normal acromioclavicular distance is less than 8mm. Widening of this space suggests an injury to the AC joint ligaments (i.e., a shoulder separation).",
+                source: "'Acromio-clavicular distance < 8mm' (The Basics of Musculoskeletal Imaging, Page 8)"
+            },
+            {
+                learningObjective: "LO 3 (Musculoskeletal Imaging Basics): Establish familiarity with imaging appearance of basic anatomical structures.",
+                question: "On a lateral X-ray of the ankle, a radiologist identifies the large bone of the heel that articulates superiorly with the talus. What is this bone?",
+                options: {
+                    A: "Navicular",
+                    B: "Cuboid",
+                    C: "Calcaneus",
+                    D: "Tibia"
+                },
+                correctAnswer: "C",
+                rationale: "The calcaneus is the largest tarsal bone and forms the heel. It articulates with the talus superiorly at the subtalar joint and the cuboid anteriorly at the calcaneocuboid joint. It is clearly identifiable on a lateral ankle radiograph.",
+                source: "'Calcaneus' (labeled on both diagram and radiograph) (The Basics of Musculoskeletal Imaging, Page 9)"
+            },
+            {
+                learningObjective: "LO 3 (Musculoskeletal Imaging Basics): Establish familiarity with imaging appearance of basic anatomical structures.",
+                question: "An axial MRI of the wrist is reviewed. The image shows the carpal bones and the contents of the carpal tunnel. Which nerve is located within the carpal tunnel and is often the focus of evaluation on this view?",
+                options: {
+                    A: "Ulnar nerve",
+                    B: "Radial nerve",
+                    C: "Median nerve",
+                    D: "Musculocutaneous nerve"
+                },
+                correctAnswer: "C",
+                rationale: "The axial view of the wrist is excellent for visualizing the carpal tunnel. The median nerve is a key structure that passes through this tunnel, along with the flexor tendons.",
+                source: "'Median n' (labeled on the axial MRI Wrist diagram) (The Basics of Musculoskeletal Imaging, Page 28)"
+            },
+            {
+                learningObjective: "LO 4 (Musculoskeletal Imaging Basics): Discuss typical radiographic views obtained for various anatomical sites.",
+                question: "A patient with anterior knee pain is being evaluated for patellofemoral syndrome. To best visualize the articulation between the patella and the femur and assess for patellar tracking, which specialized radiographic view should be ordered in addition to standard AP and lateral views?",
+                options: {
+                    A: "Rosenberg view",
+                    B: "Mortise view",
+                    C: "Merchant/Sunrise view",
+                    D: "Scapular Y view"
+                },
+                correctAnswer: "C",
+                rationale: "The Merchant or Sunrise view is a specific tangential view of the knee taken with the knee in flexion. It provides an axial view of the patellofemoral joint, which is ideal for assessing patellar alignment and cartilage space.",
+                source: "'Knee... Merchant/Sunrise' (The Basics of Musculoskeletal Imaging, Page 14)"
+            },
+            {
+                learningObjective: "LO 4 (Musculoskeletal Imaging Basics): Discuss typical radiographic views obtained for various anatomical sites.",
+                question: "An emergency room physician is evaluating a patient with an ankle injury. To get a true assessment of the ankle joint space, they order a view where the leg is internally rotated 15-20 degrees to bring the malleoli into the same plane, parallel to the imaging plate. This view provides a clear image of the entire tibiotalar articulation without bony overlap. What is this view called?",
+                options: {
+                    A: "AP Stress View",
+                    B: "Lateral View",
+                    C: "Mortise View",
+                    D: "AP View"
+                },
+                correctAnswer: "C",
+                rationale: "The mortise view is a crucial part of a standard ankle X-ray series. The internal rotation of the leg separates the normal overlap of the tibia and fibula seen on a standard AP view, allowing for a clear assessment of the entire ankle mortise (the articulation between the tibia, fibula, and talus).",
+                source: "'Ankle... Mortise' (The Basics of Musculoskeletal Imaging, Page 14)"
+            },
+            {
+                learningObjective: "LO 4 (Musculoskeletal Imaging Basics): Discuss typical radiographic views obtained for various anatomical sites.",
+                question: "A patient presents with a suspected shoulder dislocation. The AP view confirms the humeral head is not centered on the glenoid. To determine if the dislocation is anterior or posterior, a second, perpendicular view is essential. Which of the following views is specifically designed to show the relationship of the humeral head to the glenoid in the sagittal plane?",
+                options: {
+                    A: "Grashey view",
+                    B: "Zanca view",
+                    C: "Lateral or Scapular Y view",
+                    D: "Clenched Fist view"
+                },
+                correctAnswer: "C",
+                rationale: "Multiple views are critical in radiology. For a shoulder dislocation, a second view taken at 90 degrees to the AP view is mandatory. The Scapular Y view (or a trans-scapular lateral view) shows the relationship of the humeral head to the \"Y\" formed by the coracoid process, acromion, and body of the scapula, clearly demonstrating whether the dislocation is anterior or posterior.",
+                source: "'Shoulder... Lateral or Scapular Y' (The Basics of Musculoskeletal Imaging, Page 14)"
+            },
+            {
+                learningObjective: "LO 5 (Musculoskeletal Imaging Basics): Demonstrate an organized approach to the analysis of radiology of the musculoskeletal system.",
+                question: "A medical student is learning a systematic approach to reading X-rays using the mnemonic \"ABCDs\". After checking Adequacy and Alignment (A), they move on to Bones (B). What is the first feature of the bone that should be examined for any discontinuity?",
+                options: {
+                    A: "Bone density",
+                    B: "The cortex",
+                    C: "The medullary canal",
+                    D: "The articular surface"
+                },
+                correctAnswer: "B",
+                rationale: "In the systematic \"ABCDs\" approach, after confirming alignment, the next step is to carefully trace the cortex of each bone in the image. The cortex is the dense outer layer, and any break, buckle, or irregularity in its smooth line indicates a potential fracture.",
+                source: "'Bones. Check the cortex of the bone for abnormalities/fractures' (The Basics of Musculoskeletal Imaging, Page 7)"
+            },
+            {
+                learningObjective: "LO 5 (Musculoskeletal Imaging Basics): Demonstrate an organized approach to the analysis of radiology of the musculoskeletal system.",
+                question: "When systematically evaluating a radiograph, the letter 'C' in the \"ABCDs\" mnemonic prompts the reader to assess the joint spaces. What does narrowing of a joint space on an X-ray typically indicate?",
+                options: {
+                    A: "Ligamentous injury",
+                    B: "Loss of articular cartilage",
+                    C: "Bone tumor",
+                    D: "Soft tissue swelling"
+                },
+                correctAnswer: "B",
+                rationale: "The \"space\" seen between bones on an X-ray represents the articular cartilage, which is radiolucent (not visible on X-ray). Therefore, narrowing of this joint space is an indirect sign of cartilage loss, a hallmark of conditions like osteoarthritis.",
+                source: "'Cartilage. Disc or joint space' (The Basics of Musculoskeletal Imaging, Page 7)"
+            },
+            {
+                learningObjective: "LO 5 (Musculoskeletal Imaging Basics): Demonstrate an organized approach to the analysis of radiology of the musculoskeletal system.",
+                question: "A physician is reviewing a knee X-ray using a systematic approach. After evaluating Alignment, Bones, and Cartilage, they assess the Soft Tissues ('S'). Which of the following is a potential soft tissue finding that can be seen on a plain radiograph?",
+                options: {
+                    A: "Meniscal tear",
+                    B: "Cruciate ligament rupture",
+                    C: "Joint effusion",
+                    D: "Muscle strain"
+                },
+                correctAnswer: "C",
+                rationale: "While individual soft tissue structures like ligaments and menisci are not directly visualized on X-ray, their injury can lead to secondary signs. A joint effusion (excess fluid in the joint) can be seen as soft tissue swelling or the displacement of normal fat pads, and is an important finding to note in the 'S' part of the systematic review.",
+                source: "'Soft Tissue. Effusion, soft tissue swelling, calcifications, etc.' (The Basics of Musculoskeletal Imaging, Page 7)"
+            },
+            {
+                learningObjective: "LO 6 (Musculoskeletal Imaging Basics): Briefly discuss imaging manifestations of common pathologies.",
+                question: "A 67-year-old man with chronic knee pain has a weight-bearing AP X-ray of his knee. The radiograph shows significant narrowing of the medial joint compartment, bony spurs at the joint margin, and increased density of the bone just below the cartilage. These findings are classic for what pathology?",
+                options: {
+                    A: "Rheumatoid arthritis",
+                    B: "Gout",
+                    C: "Osteoarthritis",
+                    D: "Septic arthritis"
+                },
+                correctAnswer: "C",
+                rationale: "The classic radiographic signs of osteoarthritis include: asymmetric joint space narrowing, osteophyte formation (bony spurs), subchondral sclerosis (increased bone density), and subchondral cysts.",
+                source: "(Image shows comparison of 'NORMAL KNEE JOINT' and 'ARTHRITIC KNEE JOINT', with the arthritic joint demonstrating joint space narrowing.) (The Basics of Musculoskeletal Imaging, Page 39)"
+            },
+            {
+                learningObjective: "LO 6 (Musculoskeletal Imaging Basics): Briefly discuss imaging manifestations of common pathologies.",
+                question: "A 30-year-old lacrosse player with a history of recurrent anterior shoulder dislocations has an AP X-ray with the arm in internal rotation. The image reveals a compression fracture or defect on the posterolateral aspect of the humeral head. What is the name of this characteristic lesion?",
+                options: {
+                    A: "Bankart lesion",
+                    B: "SLAP lesion",
+                    C: "Hill-Sachs lesion",
+                    D: "Bennett fracture"
+                },
+                correctAnswer: "C",
+                rationale: "A Hill-Sachs lesion is an impaction fracture of the posterolateral humeral head that occurs when the humeral head is dislocated anteriorly and impacts against the anterior rim of the glenoid. It is a common finding in patients with recurrent anterior instability.",
+                source: "(Image labels a defect on the posterolateral humeral head as 'Hill-Sachs'.) (The Basics of Musculoskeletal Imaging, Page 53)"
+            },
+            {
+                learningObjective: "LO 6 (Musculoskeletal Imaging Basics): Briefly discuss imaging manifestations of common pathologies.",
+                question: "An 18-year-old soccer player has a wrist X-ray after a fall. The initial radiograph is interpreted as normal. However, due to persistent tenderness in the anatomic snuffbox, the patient is placed in a splint and returns in two weeks for repeat imaging. The new X-ray now shows a clear fracture line. A fracture that is not visible on initial imaging but becomes apparent on later studies is known as what type of fracture?",
+                options: {
+                    A: "Comminuted fracture",
+                    B: "Greenstick fracture",
+                    C: "Pathologic fracture",
+                    D: "Occult fracture"
+                },
+                correctAnswer: "D",
+                rationale: "An occult fracture is one that is not visible on initial radiographs, often because it is non-displaced. Over time, bone resorption at the fracture edges can make the fracture line visible on repeat imaging. The scaphoid is a classic location for occult fractures.",
+                source: "'When to Use [CT Scan]. Occult Fracture. Fracture that does not appear well on Xray.' (The Basics of Musculoskeletal Imaging, Page 32) and 'Sometimes fractures are not evident on initial xray and repeat imaging is needed. This allows occult fractures to reveal themselves.' (The Basics of Musculoskeletal Imaging, Page 45)"
+            }
+        ];
+        const quizContainer = document.getElementById('quiz-container');
+        const themeToggleButton = document.getElementById('theme-toggle-button');
+        const bodyElement = document.body;
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-theme');
+                themeToggleButton.textContent = 'Switch to Dark Mode';
+            } else {
+                bodyElement.classList.remove('light-theme');
+                themeToggleButton.textContent = 'Switch to Light Mode';
+            }
+            localStorage.setItem('quizTheme', theme);
+        }
+
+        function loadQuiz() {
+            quizData.forEach((qData, index) => {
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+                questionBlock.id = `q${index}`;
+
+                const loText = document.createElement('div');
+                loText.classList.add('learning-objective');
+                loText.textContent = qData.learningObjective;
+                questionBlock.appendChild(loText);
+
+                const questionText = document.createElement('p');
+                questionText.classList.add('question-text');
+                questionText.innerHTML = `${index + 1}. ${qData.question}`;
+                questionBlock.appendChild(questionText);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.classList.add('options');
+                for (const optionKey in qData.options) {
+                    const optionId = `q${index}_${optionKey}`;
+                    const label = document.createElement('label');
+                    label.htmlFor = optionId;
+
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = `q${index}`;
+                    radioInput.value = optionKey;
+                    radioInput.id = optionId;
+
+                    const labelText = document.createElement('span');
+                    labelText.textContent = ` ${optionKey}. ${qData.options[optionKey]}`;
+
+                    label.appendChild(radioInput);
+                    label.appendChild(labelText);
+                    optionsDiv.appendChild(label);
+                }
+                questionBlock.appendChild(optionsDiv);
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('button-container');
+
+                const checkButton = document.createElement('button');
+                checkButton.textContent = 'Check Answer';
+                checkButton.classList.add('check-button');
+                checkButton.onclick = () => checkAnswer(index);
+                buttonContainer.appendChild(checkButton);
+                questionBlock.appendChild(buttonContainer);
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.classList.add('feedback');
+                questionBlock.appendChild(feedbackDiv);
+
+                quizContainer.appendChild(questionBlock);
+            });
+        }
+
+        function checkAnswer(questionIndex) {
+            const questionBlockElement = document.getElementById(`q${questionIndex}`);
+            const selectedRadioButton = questionBlockElement.querySelector('input[type="radio"]:checked');
+            if (!selectedRadioButton) {
+                alert("Please select an answer first.");
+                return;
+            }
+            const selectedOptionKey = selectedRadioButton.value;
+            const qData = quizData[questionIndex];
+            const feedbackDiv = questionBlockElement.querySelector('.feedback');
+            const correct = selectedOptionKey === qData.correctAnswer;
+
+            let feedbackHTML = '';
+            if (correct) {
+                feedbackHTML = `<span class="feedback-status">Correct!</span>`;
+                feedbackDiv.className = 'feedback correct';
+            } else {
+                feedbackHTML = `<span class="feedback-status">Incorrect. The correct answer is ${qData.correctAnswer}.</span>`;
+                feedbackDiv.className = 'feedback incorrect';
+            }
+
+            feedbackHTML += `<div class="feedback-rationale"><strong>Rationale:</strong> ${qData.rationale}</div>`;
+            feedbackHTML += `<div class="feedback-source"><strong>Source:</strong> ${qData.source}</div>`;
+
+            feedbackDiv.innerHTML = feedbackHTML;
+        }
+
+        themeToggleButton.addEventListener('click', () => {
+            if (bodyElement.classList.contains('light-theme')) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+            applyTheme(savedTheme);
+            loadQuiz();
+        });
+    </script>
+</body>
+</html>
